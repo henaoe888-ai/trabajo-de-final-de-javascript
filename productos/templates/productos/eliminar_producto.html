@@ -1,0 +1,12 @@
+{% extends 'usuarios/base.html' %}
+{% block content %}
+<div style="max-width: 450px; margin: 40px auto;" class="card">
+    <h2>⚠️ Confirmar Eliminación</h2>
+    <p style="font-family: Arial;">¿Estás seguro de que deseas eliminar la joya <strong>{{ producto.nombre }}</strong> del catálogo?</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
+        <a href="{% url 'panel_admin' %}" class="btn" style="background: #ccc; color: #333;">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

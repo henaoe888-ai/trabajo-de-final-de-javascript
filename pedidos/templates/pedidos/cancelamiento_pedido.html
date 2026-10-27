@@ -1,0 +1,14 @@
+{% extends 'usuarios/base.html' %}
+{% block content %}
+<div style="max-width: 450px; margin: 40px auto;" class="card">
+    <h2>⚠️ Cancelar Mi Pedido</h2>
+    <p style="font-family: Arial;">
+        ¿Deseas solicitar la cancelación de tu pedido de la joya <strong>{{ pedido.nombre_producto }}</strong>? Esta notificación le llegará al Administrador.
+    </p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, Cancelar Pedido</button>
+        <a href="{% url 'panel_cliente' %}" class="btn" style="background: #ccc; color: #333;">Volver</a>
+    </form>
+</div>
+{% endblock %}

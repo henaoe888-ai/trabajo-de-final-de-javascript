@@ -1,0 +1,86 @@
+{% extends 'usuarios/base.html' %}
+{% block content %}
+<div class="grid-2">
+    <div class="card">
+        <h2>🛠️ Datos Principales del Empleado</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="actualizar_perfil" value="1">
+            <div class="form-group">
+                <label>Nombre:</label>
+                {{ form_perfil.first_name }}
+            </div>
+            <div class="form-group">
+                <label>Apellido:</label>
+                {{ form_perfil.last_name }}
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico:</label>
+                {{ form_perfil.email }}
+            </div>
+            <div class="form-group">
+                <label>Área de Trabajo:</label>
+                {{ form_perfil.area_trabajo }}
+            </div>
+            <div class="form-group">
+                <label>Foto de Perfil:</label>
+                {{ form_perfil.foto_perfil }}
+            </div>
+            <button type="submit" class="btn">Guardar Información en Neon</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>📊 Resumen de Actividad</h2>
+        <p style="font-family: Arial; font-size: 14px;">
+            <strong>Empleado:</strong> {{ usuario.first_name }} {{ usuario.last_name }}<br>
+            <strong>Área Asignada:</strong> {{ usuario.area_trabajo|default:"No especificada" }}<br>
+            <strong>Total Pedidos en Sistema:</strong> {{ pedidos.count }}
+        </p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>📦 Gestión y Detalle de Pedidos de Clientes</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Joya / Producto</th>
+                <th>Dirección</th>
+                <th>Valor Total</th>
+                <th>Fecha</th>
+                <th>Estado Actual</th>
+                <th>Cambiar Estado (Guardar en Neon)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pedidos %}
+            <tr>
+                <td><strong>{{ p.nombre_cliente }}</strong></td>
+                <td>{{ p.nombre_producto }}</td>
+                <td>{{ p.direccion }}</td>
+                <td>${{ p.valor_total|floatformat:0 }}</td>
+                <td>{{ p.fecha_registro|date:"d/m/Y H:i" }}</td>
+                <td><span class="badge badge-{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+                <td>
+                    <form method="POST" style="display: flex; gap: 5px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="cambiar_estado_pedido" value="1">
+                        <input type="hidden" name="pedido_id" value="{{ p.id }}">
+                        <select name="estado" style="width: auto;">
+                            <option value="PENDIENTE" {% if p.estado == 'PENDIENTE' %}selected{% endif %}>1. Pendiente</option>
+                            <option value="APROBADO" {% if p.estado == 'APROBADO' %}selected{% endif %}>2. Aprobado</option>
+                            <option value="ENTREGADO" {% if p.estado == 'ENTREGADO' %}selected{% endif %}>3. Entregado</option>
+                        </select>
+                        <button type="submit" class="btn" style="padding: 4px 8px; font-size: 12px;">Actualizar</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">No hay pedidos para gestionar.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

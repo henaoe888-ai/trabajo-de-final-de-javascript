@@ -1,0 +1,14 @@
+{% extends 'usuarios/base.html' %}
+{% block content %}
+<div style="max-width: 450px; margin: 40px auto;" class="card">
+    <h2>⚠️ Eliminar Pedido (Admin)</h2>
+    <p style="font-family: Arial;">
+        Se procederá a borrar el pedido <strong>#{{ pedido.id }}</strong> perteneciente al cliente <strong>{{ pedido.nombre_cliente }}</strong>.
+    </p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirmar Borrado</button>
+        <a href="{% url 'panel_admin' %}" class="btn" style="background: #ccc; color: #333;">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

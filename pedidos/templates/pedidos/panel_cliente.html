@@ -1,0 +1,104 @@
+{% extends 'usuarios/base.html' %}
+{% block content %}
+
+<div class="alert-banner" id="avisoJoyeria">
+    <div>
+        ✨ <strong>Recordatorio de Joyería:</strong> Recuerda que se tiene que adquirir una joya por pedido para procesar tu solicitud adecuadamente.
+    </div>
+    <button onclick="document.getElementById('avisoJoyeria').style.display='none';" class="btn" style="padding: 2px 8px; font-size: 11px;">✕ Cerrar</button>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <h2>👤 Mis Datos Principales</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="actualizar_perfil" value="1">
+            <div class="form-group">
+                <label>Nombre:</label>
+                {{ form_perfil.first_name }}
+            </div>
+            <div class="form-group">
+                <label>Apellido:</label>
+                {{ form_perfil.last_name }}
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico:</label>
+                {{ form_perfil.email }}
+            </div>
+            <div class="form-group">
+                <label>Dirección Principal:</label>
+                {{ form_perfil.direccion }}
+            </div>
+            <div class="form-group">
+                <label>Foto de Perfil:</label>
+                {{ form_perfil.foto_perfil }}
+            </div>
+            <button type="submit" class="btn">Guardar Datos</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>💎 Realizar Nuevo Pedido</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="realizar_pedido" value="1">
+            <div class="form-group">
+                <label>Seleccionar Joya (Nombre Producto):</label>
+                {{ form_pedido.producto }}
+            </div>
+            <div class="form-group">
+                <label>Dirección de Entrega:</label>
+                {{ form_pedido.direccion }}
+            </div>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Enviar Pedido a Neon</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <h2>🛍️ Mis Pedidos Realizados</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Fecha Registro</th>
+                <th>Estado</th>
+                <th>Dirección</th>
+                <th>Valor Total</th>
+                <th>Joya / Producto</th>
+                <th>Tiempo Restante</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in mis_pedidos %}
+            <tr>
+                <td><strong>{{ p.nombre_cliente }}</strong></td>
+                <td>{{ p.fecha_registro|date:"d/m/Y H:i" }}</td>
+                <td><span class="badge badge-{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+                <td>{{ p.direccion }}</td>
+                <td>${{ p.valor_total|floatformat:0 }}</td>
+                <td>{{ p.nombre_producto }}</td>
+                <td>
+                    {% if p.estado == 'PENDIENTE' %}
+                        ⏱️ {{ p.tiempo_restante_minutos }} min
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td>
+                    {% if p.estado != 'CANCELADO' %}
+                        <a href="{% url 'cancelar_pedido_cliente' p.id %}" class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;">Cancelar Pedido</a>
+                    {% else %}
+                        <span style="font-size: 12px; color: #888;">Cancelado</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8">Aún no has realizado pedidos de joyería.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

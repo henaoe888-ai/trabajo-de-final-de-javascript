@@ -1,0 +1,12 @@
+{% extends 'usuarios/base.html' %}
+{% block content %}
+<div style="max-width: 500px; margin: 30px auto;" class="card">
+    <h2>💎 {{ titulo }}</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn" style="width: 100%;">Guardar Joya</button>
+    </form>
+    <a href="{% url 'panel_admin' %}" style="display: block; text-align: center; margin-top: 15px; font-family: Arial;">Volver al Panel Admin</a>
+</div>
+{% endblock %}

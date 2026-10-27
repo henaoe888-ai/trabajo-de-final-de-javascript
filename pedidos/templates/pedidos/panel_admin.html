@@ -1,0 +1,91 @@
+{% extends 'usuarios/base.html' %}
+{% block content %}
+<div class="card">
+    <h2>👑 Panel de Administración</h2>
+    <p style="font-family: Arial; font-size: 14px;">Bienvenido, <strong>{{ usuario.username }}</strong>. Desde aquí puedes gestionar todos los productos de joyería y supervisar/eliminar pedidos de los clientes.</p>
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>💎 Productos en Catálogo</h3>
+        <a href="{% url 'crear_producto' %}" class="btn">+ Agregar Nueva Joya</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre Joya</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prod in productos %}
+            <tr>
+                <td>#{{ prod.id }}</td>
+                <td><strong>{{ prod.nombre }}</strong></td>
+                <td>{{ prod.descripcion|default:"Sin descripción" }}</td>
+                <td>${{ prod.precio|floatformat:0 }}</td>
+                <td>{{ prod.stock }} un.</td>
+                <td>
+                    <a href="{% url 'editar_producto' prod.id %}" class="btn" style="padding: 4px 8px; font-size: 12px;">Editar</a>
+                    <a href="{% url 'eliminar_producto' prod.id %}" class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No hay joyas registradas en el catálogo.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h3>📦 Todos los Pedidos Realizados por Clientes</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Pedido</th>
+                <th>Cliente</th>
+                <th>Joya Solicitada</th>
+                <th>Dirección</th>
+                <th>Valor Total</th>
+                <th>Fecha Registro</th>
+                <th>Tiempo Restante</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pedidos %}
+            <tr>
+                <td>#{{ p.id }}</td>
+                <td>{{ p.nombre_cliente }}</td>
+                <td>{{ p.nombre_producto }}</td>
+                <td>{{ p.direccion }}</td>
+                <td>${{ p.valor_total|floatformat:0 }}</td>
+                <td>{{ p.fecha_registro|date:"d/m/Y H:i" }}</td>
+                <td>
+                    {% if p.estado == 'PENDIENTE' %}
+                        ⏱️ {{ p.tiempo_restante_minutos }} min
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td><span class="badge badge-{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+                <td>
+                    {% if p.estado == 'CANCELADO' or p.esta_expirado %}
+                        <a href="{% url 'eliminar_pedido_admin' p.id %}" class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;">Borrar Pedido</a>
+                    {% else %}
+                        <span style="font-size: 11px; color: #888;">(En proceso)</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="9">No hay pedidos registrados en la plataforma.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
